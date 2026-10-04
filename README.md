@@ -92,7 +92,7 @@ adb devices
 fvm flutter pub get
 fvm flutter run                 # debug build on the running emulator
 fvm flutter test                # unit and widget tests
-fvm flutter build apk --release # release APK in build/app/outputs/flutter-apk/
+fvm flutter build apk --release --split-per-abi # release APKs, see below
 ```
 
 ### 6. Release
@@ -108,17 +108,28 @@ storeFile=../../keystore/shopper-release.jks
 
 **Back up both files somewhere safe.** Updates can only be installed over an existing installation if they are signed with the same key. Without `key.properties`, release builds are unsigned (e.g. for F-Droid, which signs with its own key).
 
+Release builds produce one APK per CPU architecture:
+
 ```fish
-fvm flutter build apk --release                 # one APK for all CPU types (~51 MB)
-fvm flutter build apk --release --split-per-abi # one APK per CPU type (~17 MB each)
+fvm flutter build apk --release --split-per-abi
 ```
 
-Install directly with `adb install build/app/outputs/flutter-apk/app-release.apk`, or copy the APK to the phone. Most current phones need `app-arm64-v8a-release.apk` from the split build.
+The APKs are written to `build/app/outputs/flutter-apk/`:
+
+| APK | For | versionCode |
+|---|---|---|
+| `app-arm64-v8a-release.apk` | almost all current phones | 2000 + build number |
+| `app-armeabi-v7a-release.apk` | old 32-bit ARM devices | 1000 + build number |
+| `app-x86_64-release.apk` | x86 emulators / devices | 4000 + build number |
+
+Flutter adds the per-architecture offset to the `versionCode` automatically. The build number is the part after `+` in `pubspec.yaml`'s `version`.
+
+Always pass `--split-per-abi`. It can't be set in the Gradle config: the Flutter tool would still expect a single APK, and `flutter run` would break. Install directly with `adb install build/app/outputs/flutter-apk/app-arm64-v8a-release.apk`, or copy the APK to the phone.
 
 Check the signature with:
 
 ```fish
-~/Android/Sdk/build-tools/36.0.0/apksigner verify --print-certs build/app/outputs/flutter-apk/app-release.apk
+~/Android/Sdk/build-tools/36.0.0/apksigner verify --print-certs build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
 ```
 
 ## License
