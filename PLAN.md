@@ -67,7 +67,8 @@ test/
 ```sql
 CREATE TABLE lists (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
-  name        TEXT    NOT NULL UNIQUE COLLATE NOCASE,  -- no duplicate list names
+  name        TEXT    NOT NULL,
+  name_key    TEXT    NOT NULL UNIQUE,     -- lower-cased trimmed name: no duplicate list names
   position    INTEGER NOT NULL,            -- order on the title screen
   created_at  INTEGER NOT NULL             -- epoch ms
 );
@@ -83,12 +84,14 @@ CREATE INDEX idx_items_list ON items(list_id);
 
 CREATE TABLE dictionary (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
-  text        TEXT    NOT NULL UNIQUE COLLATE NOCASE,
+  text        TEXT    NOT NULL,
+  text_key    TEXT    NOT NULL UNIQUE,     -- lower-cased trimmed text
   created_at  INTEGER NOT NULL
 );
 ```
 
 - `PRAGMA foreign_keys = ON` is set in `onConfigure`.
+- Case-insensitive uniqueness uses a lower-cased `*_key` column filled by Dart's `toLowerCase()`, because SQLite's `NOCASE` only folds ASCII (it would treat "Äpfel" and "äpfel" as different).
 - The dictionary is insert-only (`INSERT OR IGNORE`). Nothing deletes from it, including deleting a list or using the broom.
 - Schema changes go through `onUpgrade` with an incrementing version.
 
@@ -96,8 +99,8 @@ CREATE TABLE dictionary (
 
 | Key | Values | Default |
 |---|---|---|
-| `item_order` | `az`, `za`, `added_earliest`, `added_latest` | `az` |
-| `struck_placement` | `in_place`, `move_to_bottom` | `move_to_bottom` |
+| `item_order` | `az`, `za`, `addedEarliest`, `addedLatest` | `az` |
+| `struck_placement` | `inPlace`, `moveToBottom` | `moveToBottom` |
 
 A settings screen is reached via a gear icon in the title screen's app bar. It has two radio groups, one per setting. Changes apply immediately.
 
@@ -135,7 +138,7 @@ A settings screen is reached via a gear icon in the title screen's app bar. It h
 - **Empty state:** with no items, a small text "No items yet." (de: "Noch keine Einträge.") is centered horizontally and vertically. The add field stays visible.
 - **Items** (`ListView.builder`):
   - Tapping an item toggles strike-through (`lineThrough` + dimmed color).
-  - Order: A–Z / Z–A (case-insensitive, locale-aware) or by `created_at`.
+  - Order: A–Z / Z–A or by `created_at`. A–Z is case-insensitive and puts accented letters next to their base letter (Ä with A, ß as ss), since Dart has no built-in locale collation.
   - `move_to_bottom`: unstruck items (sorted) followed by struck items (sorted by the same rule). `in_place`: one list sorted only by the order rule.
   - Items can't be edited or deleted individually; only the broom removes them.
 - **Add field** pinned at the bottom, above the keyboard:
