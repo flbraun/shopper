@@ -167,3 +167,7 @@ Every push and pull request also runs `.github/workflows/check.yml`: generated t
 ## License
 
 Shopper is free software, licensed under the [GNU General Public License v3.0](LICENSE).
+
+## AI disclosure
+
+This app's code is entirely written by AI. All changes are reviewed, tested and fully understood by human maintainers before they end up in a public release.
