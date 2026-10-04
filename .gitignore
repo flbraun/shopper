@@ -1,1 +1,29 @@
-.vscode
+# Editors / IDEs
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+.DS_Store
+
+# FVM version cache
+.fvm/
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+*.log
+
+# Symbolication / obfuscation output
+app.*.symbols
+app.*.map.json
+
+# Android Studio release build output
+/android/app/debug
+/android/app/profile
+/android/app/release

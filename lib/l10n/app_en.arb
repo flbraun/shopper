@@ -1,0 +1,11 @@
+{
+  "@@locale": "en",
+  "appTitle": "Shopper",
+  "@appTitle": {
+    "description": "Application name, shown in the title bar. Not translated."
+  },
+  "noListsYet": "No lists yet.",
+  "@noListsYet": {
+    "description": "Empty-state text on the title screen when no shopping lists exist."
+  }
+}
