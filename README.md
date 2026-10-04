@@ -4,13 +4,11 @@ A dead-simple shopping list app for Android 16+. No ads, no tracking, local on y
 
 ## Development setup
 
-The commands below use fish syntax. For bash/zsh, replace `set -Ux VAR value` with `export VAR=value` in your shell rc file, and `fish_add_path DIR` with `export PATH="DIR:$PATH"`.
-
 ### 1. System packages
 
 You need **JDK 17** (required by the Android Gradle Plugin) and **fvm** (Flutter Version Management). On Arch/CachyOS:
 
-```fish
+```bash
 sudo pacman -S jdk17-openjdk
 # fvm: install the fvm package (e.g. from the AUR) or follow https://fvm.app
 ```
@@ -19,7 +17,7 @@ sudo pacman -S jdk17-openjdk
 
 The Flutter version is pinned in `.fvmrc`. In the repository root, run:
 
-```fish
+```bash
 fvm install          # installs the pinned Flutter version
 fvm flutter --version
 fvm flutter --disable-analytics   # optional
@@ -34,14 +32,17 @@ Install the SDK into your home directory with Google's command-line tools. Andro
 1. Download *Command line tools only* for Linux from <https://developer.android.com/studio#command-tools>.
 2. Unpack it into the folder layout `sdkmanager` expects and install the required components:
 
-```fish
+```bash
 mkdir -p ~/Android/Sdk/cmdline-tools
 cd ~/Android/Sdk/cmdline-tools
 unzip ~/Downloads/commandlinetools-linux-*_latest.zip
 mv cmdline-tools latest
 
-set -Ux ANDROID_HOME ~/Android/Sdk
-fish_add_path ~/Android/Sdk/cmdline-tools/latest/bin ~/Android/Sdk/platform-tools ~/Android/Sdk/emulator
+cat >> ~/.bashrc <<'EOF'
+export ANDROID_HOME="$HOME/Android/Sdk"
+export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"
+EOF
+source ~/.bashrc
 
 sdkmanager --install "platform-tools" "platforms;android-36" "build-tools;36.0.0" \
   "emulator" "system-images;android-36;google_apis;x86_64"
@@ -50,7 +51,7 @@ sdkmanager --licenses
 
 3. Point Flutter to the SDK and check the setup:
 
-```fish
+```bash
 fvm flutter config --android-sdk ~/Android/Sdk
 fvm flutter doctor -v
 ```
@@ -63,32 +64,32 @@ Development and testing use an Android 16 (API 36) emulator with the *Google API
 
 Create the virtual device once:
 
-```fish
+```bash
 avdmanager create avd -n shopper_api36 -k "system-images;android-36;google_apis;x86_64" -d pixel_8
 ```
 
 Start it with a window:
 
-```fish
+```bash
 emulator -avd shopper_api36
 ```
 
 Or start it headless (e.g. for automated runs):
 
-```fish
+```bash
 emulator -avd shopper_api36 -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect
 ```
 
 Wait until the emulator has booted, then check that it is connected:
 
-```fish
+```bash
 adb wait-for-device
 adb devices
 ```
 
 ### 5. Run, test, build
 
-```fish
+```bash
 fvm flutter pub get
 fvm flutter run                 # debug build on the running emulator
 fvm flutter test                # unit and widget tests
@@ -110,7 +111,7 @@ storeFile=../../keystore/shopper-release.jks
 
 Release builds produce one APK per CPU architecture:
 
-```fish
+```bash
 fvm flutter build apk --release --split-per-abi
 ```
 
@@ -130,7 +131,7 @@ Always pass `--split-per-abi`. It can't be set in the Gradle config: the Flutter
 
 Check the signature with:
 
-```fish
+```bash
 ~/Android/Sdk/build-tools/36.0.0/apksigner verify --print-certs build/release/shopper-arm64-v8a-0.1.0.apk
 ```
 
@@ -157,7 +158,7 @@ The workflow needs two repository secrets (*Settings â†’ Secrets and variables â
 
 With the GitHub CLI:
 
-```fish
+```bash
 base64 -w0 keystore/shopper-release.jks | gh secret set SHOPPER_KEYSTORE_BASE64
 sed -n 's/^storePassword=//p' android/key.properties | gh secret set SHOPPER_KEYSTORE_PASSWORD
 ```

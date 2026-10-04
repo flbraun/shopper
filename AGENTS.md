@@ -22,7 +22,7 @@ Shopper is a dead-simple shopping list app for Android 16+ (API 36), written in 
 
 Flutter is pinned in `.fvmrc`; always run it through fvm:
 
-```fish
+```bash
 fvm flutter pub get
 fvm dart format lib test
 fvm flutter analyze             # must report no issues
@@ -54,6 +54,7 @@ test/
 - **Case-insensitive matching** (unique list names, dictionary entries, duplicate items) uses Dart's `toLowerCase()` via `textKey()`, stored in `*_key` columns. Don't use SQLite `NOCASE`, which only folds ASCII.
 - **Dictionary:** insert-only. Never delete from it.
 - **Database changes:** bump the schema version in `lib/data/database.dart` and add an `onUpgrade` migration. Never break existing user data.
+- **Shell:** write shell commands in docs and all scripts in bash (`#!/usr/bin/env bash`), not fish or other shells.
 - **Tests:** new behavior gets unit or widget tests. Widget tests use `pumpApp`/`settle` from `test/ui/test_app.dart`.
 
 ## Verifying on the emulator
