@@ -2,10 +2,11 @@ import 'package:flutter/gestures.dart' show kLongPressTimeout;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:shopper/data/list_repository.dart';
+import 'package:shopper/settings/settings.dart';
 
 import 'test_app.dart';
 
-Future<void> _seedThree(ListRepository lists) async {
+Future<void> _seedThree(ListRepository lists, Settings _) async {
   for (final name in ['A', 'B', 'C']) {
     await lists.createList(name);
   }
@@ -39,7 +40,7 @@ void main() {
   ) async {
     await pumpApp(
       tester,
-      seed: (lists) async {
+      seed: (lists, _) async {
         final list = await lists.createList('Groceries');
         await lists.addItem(list.id, 'milk');
         final bread = await lists.addItem(list.id, 'Bread');
@@ -55,7 +56,7 @@ void main() {
   });
 
   testWidgets('new list: trimmed, appended at the bottom', (tester) async {
-    final lists = await pumpApp(tester, seed: _seedThree);
+    final (:lists, settings: _) = await pumpApp(tester, seed: _seedThree);
     await tester.tap(find.text('New list'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), '  Hardware  ');
@@ -98,7 +99,7 @@ void main() {
   testWidgets('drag and drop reorders lists and stores the order', (
     tester,
   ) async {
-    final lists = await pumpApp(tester, seed: _seedThree);
+    final (:lists, settings: _) = await pumpApp(tester, seed: _seedThree);
     final gesture = await _startDrag(tester, 'A');
     final step = tester.getSize(find.byType(Card).first).height + 8;
     for (var i = 0; i < 10; i++) {
@@ -116,7 +117,7 @@ void main() {
   testWidgets('bin appears while dragging and deletes the dropped list', (
     tester,
   ) async {
-    final lists = await pumpApp(tester, seed: _seedThree);
+    final (:lists, settings: _) = await pumpApp(tester, seed: _seedThree);
     final bin = find.bySemanticsLabel('Drop here to delete the list');
     expect(bin, findsNothing);
 
@@ -141,7 +142,7 @@ void main() {
   });
 
   testWidgets('dropping a list elsewhere does not delete it', (tester) async {
-    final lists = await pumpApp(tester, seed: _seedThree);
+    final (:lists, settings: _) = await pumpApp(tester, seed: _seedThree);
     final gesture = await _startDrag(tester, 'C');
     await gesture.moveBy(const Offset(0, 20));
     await tester.pump();

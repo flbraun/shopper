@@ -9,5 +9,7 @@
   "cancel": "Abbrechen",
   "create": "Erstellen",
   "listProgress": "{struck}/{total}",
-  "deleteListDropTarget": "Hier ablegen, um die Liste zu löschen"
+  "deleteListDropTarget": "Hier ablegen, um die Liste zu löschen",
+  "removeStruckItems": "Erledigte Einträge entfernen",
+  "undo": "Rückgängig"
 }

@@ -131,7 +131,7 @@ A settings screen is reached via a gear icon in the title screen's app bar. It h
 
 ### 7.2 List detail screen
 - `AppBar` with the list name.
-- **Broom** (`Icons.cleaning_services`) above the items:
+- **Broom** (`Icons.cleaning_services`) above the items, as an action in the app bar. It is disabled while the list has no struck items:
   - Tapping it immediately deletes all struck items of this list.
   - For 5 seconds the broom becomes an **undo** icon (`Icons.undo`). Tapping it restores the deleted items exactly (same text, struck state and `created_at`, so they sort back into place). After 5 s the icon reverts to the broom.
   - Restoring re-inserts in-memory copies of the deleted rows. Leaving the screen ends the undo window.

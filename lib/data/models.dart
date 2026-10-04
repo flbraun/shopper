@@ -46,6 +46,14 @@ class Item {
   final bool struck;
   final DateTime createdAt;
 
+  Item copyWith({bool? struck}) => Item(
+    id: id,
+    listId: listId,
+    text: text,
+    struck: struck ?? this.struck,
+    createdAt: createdAt,
+  );
+
   Map<String, Object?> toRow() => {
     'id': id,
     'list_id': listId,

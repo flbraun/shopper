@@ -157,6 +157,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Drop here to delete the list'**
   String get deleteListDropTarget;
+
+  /// Tooltip of the broom button that deletes all struck items of the list.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove struck items'**
+  String get removeStruckItems;
+
+  /// Tooltip of the button that restores items removed by the broom (shown for 5 seconds).
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undo;
 }
 
 class _AppLocalizationsDelegate

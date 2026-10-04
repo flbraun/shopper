@@ -33,12 +33,24 @@
   "@listProgress": {
     "description": "Status below a list's preview: number of struck items / number of all items.",
     "placeholders": {
-      "struck": {"type": "int"},
-      "total": {"type": "int"}
+      "struck": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "deleteListDropTarget": "Drop here to delete the list",
   "@deleteListDropTarget": {
     "description": "Accessibility label of the bin that appears at the bottom while dragging a list."
+  },
+  "removeStruckItems": "Remove struck items",
+  "@removeStruckItems": {
+    "description": "Tooltip of the broom button that deletes all struck items of the list."
+  },
+  "undo": "Undo",
+  "@undo": {
+    "description": "Tooltip of the button that restores items removed by the broom (shown for 5 seconds)."
   }
 }

@@ -9,11 +9,11 @@ import 'package:shopper/settings/settings.dart';
 import '../data/test_db.dart';
 
 /// Starts the app on a fresh in-memory database and settings store.
-/// [seed] can fill the database before the first frame.
-Future<ListRepository> pumpApp(
+/// [seed] can fill the database and change settings before the first frame.
+Future<({ListRepository lists, Settings settings})> pumpApp(
   WidgetTester tester, {
   Locale locale = const Locale('en'),
-  Future<void> Function(ListRepository lists)? seed,
+  Future<void> Function(ListRepository lists, Settings settings)? seed,
 }) async {
   tester.platformDispatcher.localesTestValue = [locale];
   addTearDown(tester.platformDispatcher.clearLocalesTestValue);
@@ -24,13 +24,14 @@ Future<ListRepository> pumpApp(
     final db = await openTestDatabase();
     addTearDown(db.close);
     final lists = ListRepository(db, clock: steppingClock());
-    await seed?.call(lists);
-    return (lists, await Settings.load());
+    final settings = await Settings.load();
+    await seed?.call(lists, settings);
+    return (lists, settings);
   }) as (ListRepository, Settings);
 
   await tester.pumpWidget(ShopperApp(lists: lists, settings: settings));
   await settle(tester);
-  return lists;
+  return (lists: lists, settings: settings);
 }
 
 /// Lets pending database futures complete, then settles the UI.

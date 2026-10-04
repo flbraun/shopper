@@ -40,4 +40,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteListDropTarget => 'Drop here to delete the list';
+
+  @override
+  String get removeStruckItems => 'Remove struck items';
+
+  @override
+  String get undo => 'Undo';
 }
