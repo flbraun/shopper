@@ -59,3 +59,13 @@ class Item {
 /// entries. Dart's toLowerCase() handles non-ASCII letters (Ä/ä, Ö/ö, …),
 /// which SQLite's NOCASE collation does not.
 String textKey(String text) => text.trim().toLowerCase();
+
+/// A list together with all of its items, for the title screen.
+class ListOverview {
+  const ListOverview({required this.list, required this.items});
+
+  final ShoppingList list;
+  final List<Item> items;
+
+  int get struckCount => items.where((item) => item.struck).length;
+}

@@ -30,6 +30,21 @@ class ListRepository {
     return rows.map(ShoppingList.fromRow).toList();
   }
 
+  /// All lists in title-screen order, each with all of its items.
+  Future<List<ListOverview>> getOverviews() async {
+    final lists = await getLists();
+    final itemRows = await _db.query('items', orderBy: 'id');
+    final itemsByList = <int, List<Item>>{};
+    for (final row in itemRows) {
+      final item = Item.fromRow(row);
+      (itemsByList[item.listId] ??= []).add(item);
+    }
+    return [
+      for (final list in lists)
+        ListOverview(list: list, items: itemsByList[list.id] ?? const []),
+    ];
+  }
+
   Future<bool> listNameExists(String name) async {
     final rows = await _db.query(
       'lists',

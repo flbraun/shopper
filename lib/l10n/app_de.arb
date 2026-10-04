@@ -1,5 +1,13 @@
 {
   "@@locale": "de",
   "appTitle": "Shopper",
-  "noListsYet": "Noch keine Listen."
+  "noListsYet": "Noch keine Listen.",
+  "noItemsYet": "Noch keine Einträge.",
+  "newList": "Neue Liste",
+  "listName": "Name",
+  "listNameTaken": "Eine Liste mit diesem Namen existiert bereits.",
+  "cancel": "Abbrechen",
+  "create": "Erstellen",
+  "listProgress": "{struck}/{total}",
+  "deleteListDropTarget": "Hier ablegen, um die Liste zu löschen"
 }

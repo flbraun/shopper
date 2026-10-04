@@ -109,6 +109,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No lists yet.'**
   String get noListsYet;
+
+  /// Empty-state text on a list screen when the list has no items.
+  ///
+  /// In en, this message translates to:
+  /// **'No items yet.'**
+  String get noItemsYet;
+
+  /// Button above the first list and title of the dialog that creates a list.
+  ///
+  /// In en, this message translates to:
+  /// **'New list'**
+  String get newList;
+
+  /// Label of the name field in the new-list dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get listName;
+
+  /// Error under the name field when the name is already used (ignoring case).
+  ///
+  /// In en, this message translates to:
+  /// **'A list with this name already exists.'**
+  String get listNameTaken;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// Confirms the new-list dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get create;
+
+  /// Status below a list's preview: number of struck items / number of all items.
+  ///
+  /// In en, this message translates to:
+  /// **'{struck}/{total}'**
+  String listProgress(int struck, int total);
+
+  /// Accessibility label of the bin that appears at the bottom while dragging a list.
+  ///
+  /// In en, this message translates to:
+  /// **'Drop here to delete the list'**
+  String get deleteListDropTarget;
 }
 
 class _AppLocalizationsDelegate

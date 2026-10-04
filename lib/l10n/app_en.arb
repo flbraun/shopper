@@ -7,5 +7,38 @@
   "noListsYet": "No lists yet.",
   "@noListsYet": {
     "description": "Empty-state text on the title screen when no shopping lists exist."
+  },
+  "noItemsYet": "No items yet.",
+  "@noItemsYet": {
+    "description": "Empty-state text on a list screen when the list has no items."
+  },
+  "newList": "New list",
+  "@newList": {
+    "description": "Button above the first list and title of the dialog that creates a list."
+  },
+  "listName": "Name",
+  "@listName": {
+    "description": "Label of the name field in the new-list dialog."
+  },
+  "listNameTaken": "A list with this name already exists.",
+  "@listNameTaken": {
+    "description": "Error under the name field when the name is already used (ignoring case)."
+  },
+  "cancel": "Cancel",
+  "create": "Create",
+  "@create": {
+    "description": "Confirms the new-list dialog."
+  },
+  "listProgress": "{struck}/{total}",
+  "@listProgress": {
+    "description": "Status below a list's preview: number of struck items / number of all items.",
+    "placeholders": {
+      "struck": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "deleteListDropTarget": "Drop here to delete the list",
+  "@deleteListDropTarget": {
+    "description": "Accessibility label of the bin that appears at the bottom while dragging a list."
   }
 }

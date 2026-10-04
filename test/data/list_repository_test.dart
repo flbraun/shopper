@@ -56,6 +56,24 @@ void main() {
       );
     });
 
+    test('overviews contain each list with its own items', () async {
+      final a = await repo.createList('A');
+      final b = await repo.createList('B');
+      await repo.createList('C');
+      final milk = await repo.addItem(a.id, 'Milk');
+      await repo.addItem(a.id, 'Bread');
+      await repo.addItem(b.id, 'Nails');
+      await repo.setStruck(milk.id, true);
+      await repo.reorderLists([b.id, a.id, (await repo.getLists()).last.id]);
+
+      final overviews = await repo.getOverviews();
+      expect([for (final o in overviews) o.list.name], ['B', 'A', 'C']);
+      expect([for (final i in overviews[1].items) i.text], ['Milk', 'Bread']);
+      expect(overviews[1].struckCount, 1);
+      expect(overviews[0].items.single.text, 'Nails');
+      expect(overviews[2].items, isEmpty);
+    });
+
     test('deleting a list removes its items but not the dictionary', () async {
       final list = await repo.createList('Groceries');
       await repo.addItem(list.id, 'Milk');

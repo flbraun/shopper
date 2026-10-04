@@ -1,14 +1,19 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:material_ui/material_ui.dart';
 
+import 'data/list_repository.dart';
 import 'l10n/app_localizations.dart';
+import 'settings/settings.dart';
 import 'ui/lists_screen.dart';
 
 /// Used when the OS doesn't provide a Material You palette.
 const _fallbackSeedColor = Color(0xFF2E7D32);
 
 class ShopperApp extends StatelessWidget {
-  const ShopperApp({super.key});
+  const ShopperApp({super.key, required this.lists, required this.settings});
+
+  final ListRepository lists;
+  final Settings settings;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +42,7 @@ class ShopperApp extends StatelessWidget {
             ...GlobalMaterialLocalizations.delegates,
           ],
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const ListsScreen(),
+          home: ListsScreen(lists: lists, settings: settings),
         );
       },
     );

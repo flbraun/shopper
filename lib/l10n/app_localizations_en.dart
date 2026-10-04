@@ -14,4 +14,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noListsYet => 'No lists yet.';
+
+  @override
+  String get noItemsYet => 'No items yet.';
+
+  @override
+  String get newList => 'New list';
+
+  @override
+  String get listName => 'Name';
+
+  @override
+  String get listNameTaken => 'A list with this name already exists.';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get create => 'Create';
+
+  @override
+  String listProgress(int struck, int total) {
+    return '$struck/$total';
+  }
+
+  @override
+  String get deleteListDropTarget => 'Drop here to delete the list';
 }

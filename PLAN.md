@@ -127,7 +127,7 @@ A settings screen is reached via a gear icon in the title screen's app bar. It h
 - **Drag and drop** (long-press to start a drag):
   - Moving a card between other cards reorders the lists, and the new `position`s are saved.
   - While a drag is active, a **bin** target appears at the bottom of the screen. Dropping a list on it deletes the list and its items **immediately, with no confirmation or undo** (items cascade; the dictionary is untouched).
-  - Implementation note: Flutter's `ReorderableListView` has no external drop targets, so this uses `LongPressDraggable` + `DragTarget` for the card slots and for the bin, with auto-scroll near the screen edges.
+  - Implementation note: reordering uses Flutter's `SliverReorderableList` (native reorder animations and auto-scroll). The list knows nothing about the bin, so the screen tracks the finger position. On release over the bin it cancels the reorder and deletes the list. While a card hovers over the bin, the card shrinks and fades so the bin stays visible.
 
 ### 7.2 List detail screen
 - `AppBar` with the list name.
