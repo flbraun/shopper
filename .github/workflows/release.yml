@@ -1,0 +1,117 @@
+name: Release
+
+# Pushing a tag vX.Y.Z builds signed per-ABI APKs and publishes them as a
+# GitHub Release. The tag must match the version name in pubspec.yaml.
+#
+# Required repository secrets:
+#   SHOPPER_KEYSTORE_BASE64    keystore/shopper-release.jks, base64-encoded
+#   SHOPPER_KEYSTORE_PASSWORD  its password (storePassword in android/key.properties)
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  # SHA-256 of the release signing certificate. The build fails if the APKs
+  # are signed with any other key.
+  SIGNING_CERT_SHA256: 0abb3ff90a29fdb20bd8e39acd083ba92acb5c81748b57a24a3433762f3370a2
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check tag matches pubspec.yaml version
+        id: version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          full="$(sed -n 's/^version: *//p' pubspec.yaml)"
+          name="${full%%+*}"
+          if [ "$tag" != "$name" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match pubspec.yaml version $full"
+            exit 1
+          fi
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+
+      - name: Read Flutter version from .fvmrc
+        id: fvm
+        run: echo "flutter=$(jq -r .flutter .fvmrc)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ steps.fvm.outputs.flutter }}
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed lib test
+
+      - name: Lint
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+
+      - name: Set up release signing
+        env:
+          KEYSTORE_BASE64: ${{ secrets.SHOPPER_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.SHOPPER_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ] || [ -z "$KEYSTORE_PASSWORD" ]; then
+            echo "::error::Signing secrets SHOPPER_KEYSTORE_BASE64 / SHOPPER_KEYSTORE_PASSWORD are not set"
+            exit 1
+          fi
+          keystore="$RUNNER_TEMP/shopper-release.jks"
+          echo "$KEYSTORE_BASE64" | base64 --decode > "$keystore"
+          cat > android/key.properties <<PROPS
+          storePassword=$KEYSTORE_PASSWORD
+          keyPassword=$KEYSTORE_PASSWORD
+          keyAlias=shopper
+          storeFile=$keystore
+          PROPS
+
+      - name: Build per-ABI release APKs
+        run: flutter build apk --release --split-per-abi
+
+      - name: Verify signatures
+        run: |
+          apksigner="$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -n 1)apksigner"
+          for apk in build/release/*.apk; do
+            digest="$("$apksigner" verify --print-certs "$apk" \
+              | sed -n 's/^Signer #1 certificate SHA-256 digest: //p')"
+            if [ "$digest" != "$SIGNING_CERT_SHA256" ]; then
+              echo "::error::$apk is not signed with the release key ($digest)"
+              exit 1
+            fi
+          done
+
+      - name: Remove signing material
+        if: always()
+        run: rm -f android/key.properties "$RUNNER_TEMP/shopper-release.jks"
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.name }}
+        run: |
+          cd build/release
+          sha256sum shopper-*-"$VERSION".apk > SHA256SUMS
+          gh release create "$GITHUB_REF_NAME" \
+            --title "Shopper $VERSION" \
+            --generate-notes \
+            shopper-*-"$VERSION".apk SHA256SUMS
