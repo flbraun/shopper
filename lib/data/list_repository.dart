@@ -17,10 +17,14 @@ class DuplicateListNameException implements Exception {
 /// Shopping lists and their items.
 class ListRepository {
   ListRepository(this._db, {DateTime Function()? clock})
-    : _clock = clock ?? DateTime.now;
+    : _clock = clock ?? DateTime.now,
+      dictionary = DictionaryRepository(_db, clock: clock);
 
   final Database _db;
   final DateTime Function() _clock;
+
+  /// Every item text ever added; source of the add field's suggestions.
+  final DictionaryRepository dictionary;
 
   // Lists
 

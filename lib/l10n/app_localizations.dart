@@ -169,6 +169,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Undo'**
   String get undo;
+
+  /// Hint in the text field at the bottom of a list.
+  ///
+  /// In en, this message translates to:
+  /// **'Add item'**
+  String get addItemHint;
+
+  /// Title of the dialog shown when adding an item that is already on the list.
+  ///
+  /// In en, this message translates to:
+  /// **'Already on the list'**
+  String get duplicateItemTitle;
+
+  /// Body of the duplicate dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{item}\" is already on this list. Add it a second time?'**
+  String duplicateItemMessage(String item);
+
+  /// Confirms adding a duplicate item.
+  ///
+  /// In en, this message translates to:
+  /// **'Add anyway'**
+  String get addAnyway;
 }
 
 class _AppLocalizationsDelegate

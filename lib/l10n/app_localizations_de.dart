@@ -46,4 +46,18 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get undo => 'Rückgängig';
+
+  @override
+  String get addItemHint => 'Eintrag hinzufügen';
+
+  @override
+  String get duplicateItemTitle => 'Bereits auf der Liste';
+
+  @override
+  String duplicateItemMessage(String item) {
+    return '„$item“ ist bereits auf dieser Liste. Ein zweites Mal hinzufügen?';
+  }
+
+  @override
+  String get addAnyway => 'Trotzdem hinzufügen';
 }

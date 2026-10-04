@@ -46,4 +46,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get undo => 'Undo';
+
+  @override
+  String get addItemHint => 'Add item';
+
+  @override
+  String get duplicateItemTitle => 'Already on the list';
+
+  @override
+  String duplicateItemMessage(String item) {
+    return '\"$item\" is already on this list. Add it a second time?';
+  }
+
+  @override
+  String get addAnyway => 'Add anyway';
 }

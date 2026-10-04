@@ -11,5 +11,9 @@
   "listProgress": "{struck}/{total}",
   "deleteListDropTarget": "Hier ablegen, um die Liste zu löschen",
   "removeStruckItems": "Erledigte Einträge entfernen",
-  "undo": "Rückgängig"
+  "undo": "Rückgängig",
+  "addItemHint": "Eintrag hinzufügen",
+  "duplicateItemTitle": "Bereits auf der Liste",
+  "duplicateItemMessage": "„{item}“ ist bereits auf dieser Liste. Ein zweites Mal hinzufügen?",
+  "addAnyway": "Trotzdem hinzufügen"
 }

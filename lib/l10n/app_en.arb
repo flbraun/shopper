@@ -52,5 +52,26 @@
   "undo": "Undo",
   "@undo": {
     "description": "Tooltip of the button that restores items removed by the broom (shown for 5 seconds)."
+  },
+  "addItemHint": "Add item",
+  "@addItemHint": {
+    "description": "Hint in the text field at the bottom of a list."
+  },
+  "duplicateItemTitle": "Already on the list",
+  "@duplicateItemTitle": {
+    "description": "Title of the dialog shown when adding an item that is already on the list."
+  },
+  "duplicateItemMessage": "\"{item}\" is already on this list. Add it a second time?",
+  "@duplicateItemMessage": {
+    "description": "Body of the duplicate dialog.",
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "addAnyway": "Add anyway",
+  "@addAnyway": {
+    "description": "Confirms adding a duplicate item."
   }
 }

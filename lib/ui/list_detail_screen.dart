@@ -7,12 +7,14 @@ import '../data/list_repository.dart';
 import '../data/models.dart';
 import '../l10n/app_localizations.dart';
 import '../settings/settings.dart';
+import 'widgets/add_item_field.dart';
 import 'widgets/item_tile.dart';
 
 /// Items of one list.
 ///
 /// Tapping an item strikes or unstrikes it. The broom deletes all struck
-/// items; for [undoDuration] afterwards it turns into an undo button.
+/// items; for [undoDuration] afterwards it turns into an undo button. The
+/// field at the bottom adds items, with suggestions from the dictionary.
 class ListDetailScreen extends StatefulWidget {
   const ListDetailScreen({
     super.key,
@@ -68,6 +70,41 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
       ];
     });
     widget.lists.setStruck(item.id, updated.struck);
+  }
+
+  /// Adds [text] as a new unstruck item. If the list already has it (struck
+  /// or not), asks first. Returns whether the item was added.
+  Future<bool> _addItem(String text) async {
+    final lists = widget.lists;
+    final listId = widget.list.id;
+    if (await lists.containsItem(listId, text)) {
+      if (!mounted || !await _confirmDuplicate(text.trim())) return false;
+    }
+    await lists.addItem(listId, text);
+    await _load();
+    return true;
+  }
+
+  Future<bool> _confirmDuplicate(String text) async {
+    final l10n = AppLocalizations.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.duplicateItemTitle),
+        content: Text(l10n.duplicateItemMessage(text)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(l10n.addAnyway),
+          ),
+        ],
+      ),
+    );
+    return confirmed ?? false;
   }
 
   Future<void> _removeStruck() async {
@@ -146,7 +183,19 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
           ),
         ],
       ),
-      body: body,
+      body: Column(
+        children: [
+          Expanded(child: body),
+          SafeArea(
+            top: false,
+            minimum: const EdgeInsets.all(8),
+            child: AddItemField(
+              onAdd: _addItem,
+              suggestions: widget.lists.dictionary.suggestions,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

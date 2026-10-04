@@ -146,6 +146,8 @@ A settings screen is reached via a gear icon in the title screen's app bar. It h
   - **Suggestions** while typing: dictionary entries that contain the input, case-insensitive. "Starts with" matches come first, then alphabetical, up to ~8 entries. Entries already on the list are *not* hidden. Tapping a suggestion adds it (the same path as submitting).
   - **Duplicate check:** if the list already has an item with the same text (case-insensitive, trimmed), a dialog says the item is already on the list and asks whether to add it a second time. "Add anyway" or "Cancel". This applies whether the existing item is struck or not. "Add anyway" always adds a **second, new, unstruck** item; the existing item stays unchanged, so a struck one stays struck until the broom removes it.
   - The field keeps focus after adding.
+  - Enter always adds the typed text; a suggestion is only added by tapping it. The suggestion popup therefore highlights no entry.
+  - Cancelling the duplicate dialog adds nothing and keeps the typed text in the field.
 
 ### 7.3 i18n
 - `flutter gen-l10n` with ARB files for `en` (template) and `de`. Every user-facing string goes through `AppLocalizations`; none are hard-coded.
