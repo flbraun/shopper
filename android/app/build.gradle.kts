@@ -1,8 +1,18 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+
+// Release signing config, kept out of git (see README). Without it, release
+// builds are unsigned, e.g. for F-Droid, which signs APKs itself.
+val keyProperties =
+    Properties().apply {
+        val file = rootProject.file("key.properties")
+        if (file.exists()) file.inputStream().use { load(it) }
+    }
 
 android {
     namespace = "de.flbraun.shopper"
@@ -28,12 +38,34 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        if (!keyProperties.isEmpty) {
+            create("release") {
+                storeFile = file(keyProperties.getProperty("storeFile"))
+                storePassword = keyProperties.getProperty("storePassword")
+                keyAlias = keyProperties.getProperty("keyAlias")
+                keyPassword = keyProperties.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.findByName("release")
         }
+    }
+
+    // The app is only translated to English and German; drop library
+    // translations for other languages.
+    androidResources {
+        localeFilters += listOf("en", "de")
+    }
+
+    // No Google-encrypted dependency metadata block in the APK (F-Droid
+    // rejects it).
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
     }
 }
 

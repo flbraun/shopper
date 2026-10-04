@@ -95,4 +95,28 @@ fvm flutter test                # unit and widget tests
 fvm flutter build apk --release # release APK in build/app/outputs/flutter-apk/
 ```
 
-Release signing reads `android/key.properties` and the keystore it references. Neither file is committed.
+### 6. Release
+
+Release builds are signed with the keystore in `keystore/` via `android/key.properties`. Both are git-ignored:
+
+```properties
+storePassword=…
+keyPassword=…
+keyAlias=shopper
+storeFile=../../keystore/shopper-release.jks
+```
+
+**Back up both files somewhere safe.** Updates can only be installed over an existing installation if they are signed with the same key. Without `key.properties`, release builds are unsigned (e.g. for F-Droid, which signs with its own key).
+
+```fish
+fvm flutter build apk --release                 # one APK for all CPU types (~51 MB)
+fvm flutter build apk --release --split-per-abi # one APK per CPU type (~17 MB each)
+```
+
+Install directly with `adb install build/app/outputs/flutter-apk/app-release.apk`, or copy the APK to the phone. Most current phones need `app-arm64-v8a-release.apk` from the split build.
+
+Check the signature with:
+
+```fish
+~/Android/Sdk/build-tools/36.0.0/apksigner verify --print-certs build/app/outputs/flutter-apk/app-release.apk
+```
