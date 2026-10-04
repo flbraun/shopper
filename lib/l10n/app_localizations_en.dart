@@ -60,4 +60,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addAnyway => 'Add anyway';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get itemOrder => 'Item order';
+
+  @override
+  String get itemOrderAz => 'A–Z';
+
+  @override
+  String get itemOrderZa => 'Z–A';
+
+  @override
+  String get itemOrderAddedEarliest => 'Added earliest first';
+
+  @override
+  String get itemOrderAddedLatest => 'Added latest first';
+
+  @override
+  String get struckItems => 'Struck items';
+
+  @override
+  String get struckInPlace => 'Keep in place';
+
+  @override
+  String get struckMoveToBottom => 'Move to the bottom';
 }

@@ -15,5 +15,14 @@
   "addItemHint": "Eintrag hinzufügen",
   "duplicateItemTitle": "Bereits auf der Liste",
   "duplicateItemMessage": "„{item}“ ist bereits auf dieser Liste. Ein zweites Mal hinzufügen?",
-  "addAnyway": "Trotzdem hinzufügen"
+  "addAnyway": "Trotzdem hinzufügen",
+  "settings": "Einstellungen",
+  "itemOrder": "Reihenfolge der Einträge",
+  "itemOrderAz": "A–Z",
+  "itemOrderZa": "Z–A",
+  "itemOrderAddedEarliest": "Zuerst hinzugefügte zuerst",
+  "itemOrderAddedLatest": "Zuletzt hinzugefügte zuerst",
+  "struckItems": "Erledigte Einträge",
+  "struckInPlace": "An ihrer Stelle lassen",
+  "struckMoveToBottom": "Nach unten verschieben"
 }

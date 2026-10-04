@@ -73,5 +73,23 @@
   "addAnyway": "Add anyway",
   "@addAnyway": {
     "description": "Confirms adding a duplicate item."
-  }
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Title of the settings screen and tooltip of its button on the title screen."
+  },
+  "itemOrder": "Item order",
+  "@itemOrder": {
+    "description": "Settings section: how items of a list are sorted."
+  },
+  "itemOrderAz": "A–Z",
+  "itemOrderZa": "Z–A",
+  "itemOrderAddedEarliest": "Added earliest first",
+  "itemOrderAddedLatest": "Added latest first",
+  "struckItems": "Struck items",
+  "@struckItems": {
+    "description": "Settings section: where struck items are shown."
+  },
+  "struckInPlace": "Keep in place",
+  "struckMoveToBottom": "Move to the bottom"
 }

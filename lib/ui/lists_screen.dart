@@ -6,6 +6,7 @@ import '../l10n/app_localizations.dart';
 import '../settings/settings.dart';
 import 'list_detail_screen.dart';
 import 'new_list_dialog.dart';
+import 'settings_screen.dart';
 import 'widgets/list_card.dart';
 
 /// Title screen: all shopping lists.
@@ -192,7 +193,20 @@ class _ListsScreenState extends State<ListsScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.appTitle)),
+      appBar: AppBar(
+        title: Text(l10n.appTitle),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            tooltip: l10n.settings,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => SettingsScreen(settings: widget.settings),
+              ),
+            ),
+          ),
+        ],
+      ),
       body: Listener(
         onPointerMove: _onPointerMove,
         onPointerUp: _onPointerUp,

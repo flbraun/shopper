@@ -193,6 +193,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add anyway'**
   String get addAnyway;
+
+  /// Title of the settings screen and tooltip of its button on the title screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
+  /// Settings section: how items of a list are sorted.
+  ///
+  /// In en, this message translates to:
+  /// **'Item order'**
+  String get itemOrder;
+
+  /// No description provided for @itemOrderAz.
+  ///
+  /// In en, this message translates to:
+  /// **'A–Z'**
+  String get itemOrderAz;
+
+  /// No description provided for @itemOrderZa.
+  ///
+  /// In en, this message translates to:
+  /// **'Z–A'**
+  String get itemOrderZa;
+
+  /// No description provided for @itemOrderAddedEarliest.
+  ///
+  /// In en, this message translates to:
+  /// **'Added earliest first'**
+  String get itemOrderAddedEarliest;
+
+  /// No description provided for @itemOrderAddedLatest.
+  ///
+  /// In en, this message translates to:
+  /// **'Added latest first'**
+  String get itemOrderAddedLatest;
+
+  /// Settings section: where struck items are shown.
+  ///
+  /// In en, this message translates to:
+  /// **'Struck items'**
+  String get struckItems;
+
+  /// No description provided for @struckInPlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep in place'**
+  String get struckInPlace;
+
+  /// No description provided for @struckMoveToBottom.
+  ///
+  /// In en, this message translates to:
+  /// **'Move to the bottom'**
+  String get struckMoveToBottom;
 }
 
 class _AppLocalizationsDelegate

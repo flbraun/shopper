@@ -102,7 +102,7 @@ CREATE TABLE dictionary (
 | `item_order` | `az`, `za`, `addedEarliest`, `addedLatest` | `az` |
 | `struck_placement` | `inPlace`, `moveToBottom` | `moveToBottom` |
 
-A settings screen is reached via a gear icon in the title screen's app bar. It has two radio groups, one per setting. Changes apply immediately.
+A settings screen is reached via a gear icon in the title screen's app bar. (On Android, `shared_preferences`' current API stores the values via Jetpack DataStore under `files/datastore/`, not in the legacy `shared_prefs/*.xml`.) It has two radio groups, one per setting. Changes apply immediately.
 
 ## 6. Look and feel: following the OS
 

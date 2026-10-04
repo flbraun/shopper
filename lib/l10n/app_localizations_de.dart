@@ -60,4 +60,31 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get addAnyway => 'Trotzdem hinzufügen';
+
+  @override
+  String get settings => 'Einstellungen';
+
+  @override
+  String get itemOrder => 'Reihenfolge der Einträge';
+
+  @override
+  String get itemOrderAz => 'A–Z';
+
+  @override
+  String get itemOrderZa => 'Z–A';
+
+  @override
+  String get itemOrderAddedEarliest => 'Zuerst hinzugefügte zuerst';
+
+  @override
+  String get itemOrderAddedLatest => 'Zuletzt hinzugefügte zuerst';
+
+  @override
+  String get struckItems => 'Erledigte Einträge';
+
+  @override
+  String get struckInPlace => 'An ihrer Stelle lassen';
+
+  @override
+  String get struckMoveToBottom => 'Nach unten verschieben';
 }
