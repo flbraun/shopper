@@ -92,7 +92,7 @@ adb devices
 fvm flutter pub get
 fvm flutter run                 # debug build on the running emulator
 fvm flutter test                # unit and widget tests
-fvm flutter build apk --release --split-per-abi # release APKs, see below
+fvm flutter build apk --release --split-per-abi # release APKs in build/release/, see below
 ```
 
 ### 6. Release
@@ -114,22 +114,24 @@ Release builds produce one APK per CPU architecture:
 fvm flutter build apk --release --split-per-abi
 ```
 
-The APKs are written to `build/app/outputs/flutter-apk/`:
+The APKs are written to `build/release/` as `shopper-<abi>-<version>.apk`:
 
 | APK | For | versionCode |
 |---|---|---|
-| `app-arm64-v8a-release.apk` | almost all current phones | 2000 + build number |
-| `app-armeabi-v7a-release.apk` | old 32-bit ARM devices | 1000 + build number |
-| `app-x86_64-release.apk` | x86 emulators / devices | 4000 + build number |
+| `shopper-arm64-v8a-<version>.apk` | almost all current phones | 2000 + build number |
+| `shopper-armeabi-v7a-<version>.apk` | old 32-bit ARM devices | 1000 + build number |
+| `shopper-x86_64-<version>.apk` | x86 emulators / devices | 4000 + build number |
+
+`<version>` is the version name from `pubspec.yaml` (e.g. `0.1.0`). Identical copies under Flutter's names (`app-<abi>-release.apk`) remain in `build/app/outputs/flutter-apk/`, because the Flutter tool looks them up there by name. Older versions are not deleted from `build/release/`.
 
 Flutter adds the per-architecture offset to the `versionCode` automatically. The build number is the part after `+` in `pubspec.yaml`'s `version`.
 
-Always pass `--split-per-abi`. It can't be set in the Gradle config: the Flutter tool would still expect a single APK, and `flutter run` would break. Install directly with `adb install build/app/outputs/flutter-apk/app-arm64-v8a-release.apk`, or copy the APK to the phone.
+Always pass `--split-per-abi`. It can't be set in the Gradle config: the Flutter tool would still expect a single APK, and `flutter run` would break. Install directly with `adb install build/release/shopper-arm64-v8a-0.1.0.apk`, or copy the APK to the phone.
 
 Check the signature with:
 
 ```fish
-~/Android/Sdk/build-tools/36.0.0/apksigner verify --print-certs build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+~/Android/Sdk/build-tools/36.0.0/apksigner verify --print-certs build/release/shopper-arm64-v8a-0.1.0.apk
 ```
 
 ## License

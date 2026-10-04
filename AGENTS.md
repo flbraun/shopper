@@ -69,7 +69,7 @@ Test on the Android 16 emulator (AVD `shopper_api36`, see README), not on a real
 
 - Release signing reads `android/key.properties` and `keystore/shopper-release.jks`. **Never commit, print or move these files**, and never regenerate the keystore: updates must be signed with the same key.
 - Without `key.properties`, the release build is unsigned (for F-Droid).
-- Build releases with `fvm flutter build apk --release --split-per-abi`: one APK per architecture in `build/app/outputs/flutter-apk/`. Don't force splits in Gradle; it breaks the Flutter tool and `flutter run`.
+- Build releases with `fvm flutter build apk --release --split-per-abi`: one APK per architecture, copied to `build/release/shopper-<abi>-<version>.apk` by the `copyReleaseApks` Gradle task. Keep Flutter's original names in `build/app/outputs/flutter-apk/` untouched; the Flutter tool looks them up there. Don't force splits in Gradle; it breaks the Flutter tool and `flutter run`.
 - Only English and German resources are bundled (`localeFilters`). Adding a language means updating the ARB files, `localeFilters` and `android/app/src/main/res/xml/locales_config.xml`.
 
 ## Commits

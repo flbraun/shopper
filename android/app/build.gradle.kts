@@ -78,3 +78,19 @@ kotlin {
 flutter {
     source = "../.."
 }
+
+// Release APKs named shopper-<abi>-<version>.apk, copied to build/release/.
+// Flutter's own copies in build/app/outputs/flutter-apk/ keep their names,
+// because the Flutter tool looks them up by name after the build.
+val copyReleaseApks by tasks.registering(Copy::class) {
+    val version = android.defaultConfig.versionName
+    from(layout.buildDirectory.dir("outputs/apk/release")) {
+        include("app-*-release.apk")
+    }
+    into(layout.buildDirectory.dir("../release"))
+    rename("""app-(.+)-release\.apk""", "shopper-$1-$version.apk")
+}
+
+tasks.matching { it.name == "assembleRelease" }.configureEach {
+    finalizedBy(copyReleaseApks)
+}
