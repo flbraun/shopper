@@ -120,3 +120,7 @@ Check the signature with:
 ```fish
 ~/Android/Sdk/build-tools/36.0.0/apksigner verify --print-certs build/app/outputs/flutter-apk/app-release.apk
 ```
+
+## License
+
+Shopper is free software, licensed under the [GNU General Public License v3.0](LICENSE).
