@@ -14,6 +14,9 @@ Status: **all questions answered (rounds 1–3); ready to implement once the too
 | Settings | `shared_preferences`, app-wide |
 | List data | SQLite through `sqflite` |
 | Languages | English, German |
+| License | GPL-3.0 (`LICENSE`) |
+| Version | `0.x` until the app is considered ready for 1.0 |
+| Backup | Android app backup stays enabled (`allowBackup` default): the one deliberate exception to "all offline" |
 | Out of scope | Home screen widgets, editing/deleting single items, renaming lists, iOS/web/desktop targets, network access, analytics |
 
 ## 2. Dependencies
