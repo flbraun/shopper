@@ -134,6 +134,36 @@ Check the signature with:
 ~/Android/Sdk/build-tools/36.0.0/apksigner verify --print-certs build/release/shopper-arm64-v8a-0.1.0.apk
 ```
 
+### 7. Publishing a release
+
+Releases are built by GitHub Actions (`.github/workflows/release.yml`) when a version tag is pushed. `pubspec.yaml` is the single source of the version; the tag must match it.
+
+1. In `pubspec.yaml`, raise the version name and add 1 to the build number (the part after `+`, keep it below 1000), e.g. `0.1.0+1` → `0.2.0+2`.
+2. Commit: `git commit -am "chore(release): 0.2.0"`
+3. Tag and push: `git tag v0.2.0 && git push origin main v0.2.0`
+
+The workflow:
+- checks that the tag matches `pubspec.yaml`,
+- runs format check, lint and tests,
+- builds the signed per-ABI APKs and verifies they are signed with the release key,
+- publishes a GitHub Release with `shopper-<abi>-<version>.apk`, a `SHA256SUMS` file and notes generated from the commits.
+
+The workflow needs two repository secrets (*Settings → Secrets and variables → Actions*):
+
+| Secret | Value |
+|---|---|
+| `SHOPPER_KEYSTORE_BASE64` | `base64 -w0 keystore/shopper-release.jks` |
+| `SHOPPER_KEYSTORE_PASSWORD` | `storePassword` from `android/key.properties` |
+
+With the GitHub CLI:
+
+```fish
+base64 -w0 keystore/shopper-release.jks | gh secret set SHOPPER_KEYSTORE_BASE64
+sed -n 's/^storePassword=//p' android/key.properties | gh secret set SHOPPER_KEYSTORE_PASSWORD
+```
+
+Every push and pull request also runs `.github/workflows/check.yml`: generated translations up to date, format check, lint and tests.
+
 ## License
 
 Shopper is free software, licensed under the [GNU General Public License v3.0](LICENSE).
