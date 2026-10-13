@@ -34,7 +34,7 @@ class ListCard extends StatelessWidget {
     );
     final preview = unstruck.map((item) => item.text).join(', ');
 
-    return Card(
+    return Card.filled(
       margin: EdgeInsets.zero,
       elevation: elevation,
       clipBehavior: Clip.antiAlias,
