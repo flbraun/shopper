@@ -1,0 +1,4 @@
+# Image builds only need the Docker files and the pinned Flutter version.
+*
+!.fvmrc
+!docker/

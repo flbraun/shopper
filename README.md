@@ -4,7 +4,64 @@ A dead-simple shopping list app for Android 16+. No ads, no tracking, local on y
 
 ## Development setup
 
-### 1. System packages
+The whole toolchain runs in Docker containers (`compose.yaml`), so the host only needs:
+
+- **Docker** with the Compose and Buildx plugins
+- **KVM** for the emulator (`/dev/kvm`; check with `ls -l /dev/kvm`)
+
+### Toolchain container
+
+`./dev` runs commands in the development container. The repository is mounted at `/workspace`, and files are written as your user. The first call builds the images, which takes a while and needs about 18 GB of disk space.
+
+```bash
+./dev                                 # interactive shell
+./dev flutter pub get
+./dev flutter test                    # unit and widget tests
+./dev flutter analyze
+./dev dart format lib test
+./dev flutter build apk --release --split-per-abi   # release APKs in build/release/, see below
+```
+
+`./dev fvm flutter …` works as well: inside the container, `fvm` is a stand-in that runs the preinstalled Flutter.
+
+All versions are pinned, and SDK downloads are verified against Google's checksums:
+
+| Component | Version | Defined in |
+|---|---|---|
+| JDK | Temurin 17.0.20.1 | `docker/dev/Dockerfile` |
+| Flutter | from `.fvmrc` (3.47.6) | `.fvmrc` |
+| Android command-line tools | 23.0 (build 16111833) | `docker/dev/Dockerfile` |
+| Android platform / build-tools / NDK | 36 / 36.0.0 / 28.2.13676358 | `docker/dev/Dockerfile` |
+| platform-tools (adb) | 37.0.1 | both Dockerfiles |
+| Emulator / system image | 37.2.12 / Android 16 Google APIs x86_64 r07 | `docker/emulator/Dockerfile` |
+
+Gradle and pub caches live in Docker volumes, so later builds are fast. After changing a pinned version, rebuild with `./dev build` (both images) or `./dev build dev` / `./dev build emulator`.
+
+### Emulator
+
+```bash
+./dev emulator start    # starts the Android 16 emulator, waits until it has booted
+./dev adb devices       # shows emulator:5555
+./dev flutter run       # debug build with hot reload
+./dev emulator logs
+./dev emulator stop
+```
+
+The emulator screen is shown in the browser: <http://localhost:6080/vnc.html?autoconnect=1&resize=scale>. It's only reachable from your own machine.
+
+The dev container connects adb to the emulator automatically. Apps and data on the emulator survive `stop`/`start`; `docker compose down` resets it.
+
+### Notes
+
+- **IPv6:** image builds use the host network, and the containers get an IPv6-enabled network that prefers IPv6. On some networks (e.g. DS-Lite connections), `dl.google.com` is unreachable over IPv4, which would break SDK and Google Maven downloads. Without IPv6, everything falls back to IPv4.
+- **Switching between container and native builds:** `build/` and `.dart_tool/` contain absolute paths of the environment that created them. After switching, the first build can fail; run `flutter clean` first.
+- **Image builds** go through `docker buildx bake` (called by `./dev build`), because Compose can't grant builds access to the host network.
+
+### Native setup (without Docker)
+
+The toolchain can also be installed directly on the host. Use the versions from the table above.
+
+#### 1. System packages
 
 You need **JDK 17** (required by the Android Gradle Plugin) and **fvm** (Flutter Version Management). On Arch/CachyOS:
 
@@ -13,7 +70,7 @@ sudo pacman -S jdk17-openjdk
 # fvm: install the fvm package (e.g. from the AUR) or follow https://fvm.app
 ```
 
-### 2. Flutter (via fvm)
+#### 2. Flutter (via fvm)
 
 The Flutter version is pinned in `.fvmrc`. In the repository root, run:
 
@@ -25,7 +82,7 @@ fvm flutter --disable-analytics   # optional
 
 Always call Flutter as `fvm flutter …` inside this repository, so the pinned version is used.
 
-### 3. Android SDK
+#### 3. Android SDK
 
 Install the SDK into your home directory with Google's command-line tools. Android Studio is not required. Avoid a root-owned SDK (e.g. `/opt/android-sdk`), because Gradle needs to be able to download missing SDK components during builds.
 
@@ -58,7 +115,7 @@ fvm flutter doctor -v
 
 Only the *Flutter* and *Android toolchain* sections matter. Chrome and Linux toolchain warnings can be ignored, or hidden with `fvm flutter config --no-enable-web --no-enable-linux-desktop`.
 
-### 4. Emulator
+#### 4. Emulator
 
 Development and testing use an Android 16 (API 36) emulator with the *Google APIs* x86_64 image. Unlike the Play Store image, it allows `adb root`. Hardware acceleration needs KVM; `/dev/kvm` must be readable and writable by your user.
 
@@ -87,16 +144,11 @@ adb wait-for-device
 adb devices
 ```
 
-### 5. Run, test, build
+#### 5. Run, test, build
 
-```bash
-fvm flutter pub get
-fvm flutter run                 # debug build on the running emulator
-fvm flutter test                # unit and widget tests
-fvm flutter build apk --release --split-per-abi # release APKs in build/release/, see below
-```
+Same commands as in the container, with `fvm flutter …` instead of `./dev flutter …`.
 
-### 6. Release
+### Release
 
 Release builds are signed with the keystore in `keystore/` via `android/key.properties`. Both are git-ignored:
 
@@ -112,7 +164,7 @@ storeFile=../../keystore/shopper-release.jks
 Release builds produce one APK per CPU architecture:
 
 ```bash
-fvm flutter build apk --release --split-per-abi
+./dev flutter build apk --release --split-per-abi
 ```
 
 The APKs are written to `build/release/` as `shopper-<abi>-<version>.apk`:
@@ -127,15 +179,15 @@ The APKs are written to `build/release/` as `shopper-<abi>-<version>.apk`:
 
 Flutter adds the per-architecture offset to the `versionCode` automatically. The build number is the part after `+` in `pubspec.yaml`'s `version`.
 
-Always pass `--split-per-abi`. It can't be set in the Gradle config: the Flutter tool would still expect a single APK, and `flutter run` would break. Install directly with `adb install build/release/shopper-arm64-v8a-0.1.0.apk`, or copy the APK to the phone.
+Always pass `--split-per-abi`. It can't be set in the Gradle config: the Flutter tool would still expect a single APK, and `flutter run` would break. Install directly with `./dev adb install build/release/shopper-x86_64-0.1.0.apk` (emulator) or `adb install build/release/shopper-arm64-v8a-0.1.0.apk` (phone), or copy the APK to the phone.
 
 Check the signature with:
 
 ```bash
-~/Android/Sdk/build-tools/36.0.0/apksigner verify --print-certs build/release/shopper-arm64-v8a-0.1.0.apk
+./dev apksigner verify --print-certs build/release/shopper-arm64-v8a-0.1.0.apk
 ```
 
-### 7. Publishing a release
+### Publishing a release
 
 Releases are built by GitHub Actions (`.github/workflows/release.yml`) when a version tag is pushed. `pubspec.yaml` is the single source of the version; the tag must match it.
 
