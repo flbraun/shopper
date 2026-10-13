@@ -20,17 +20,20 @@ Shopper is a dead-simple shopping list app for Android 16+ (API 36), written in 
 
 ## Tooling
 
-Flutter is pinned in `.fvmrc`; always run it through fvm:
+The toolchain runs in Docker (`compose.yaml`, `docker/`); run every command through `./dev`:
 
 ```bash
-fvm flutter pub get
-fvm dart format lib test
-fvm flutter analyze             # must report no issues
-fvm flutter test                # must pass
-fvm flutter build apk --debug
+./dev flutter pub get
+./dev dart format lib test
+./dev flutter analyze           # must report no issues
+./dev flutter test              # must pass
+./dev flutter build apk --debug
 ```
 
-The Android SDK is in `~/Android/Sdk`. Its tools may not be on `PATH`, so call them by full path, e.g. `~/Android/Sdk/platform-tools/adb`.
+- Versions are pinned in `docker/dev/Dockerfile`, `docker/emulator/Dockerfile` and `.fvmrc` (Flutter). Change them there and rebuild with `./dev build`.
+- `adb`, `apksigner`, `sdkmanager` etc. are on `PATH` inside the container (`./dev adb …`).
+- Don't install toolchain parts on the host; the host only needs Docker.
+- If the first build after switching between container and native builds fails, run `./dev flutter clean`.
 
 ## Code layout
 
@@ -49,7 +52,7 @@ test/
 ## Conventions
 
 - **State:** plain `ChangeNotifier`/`setState`; no state-management packages.
-- **Strings:** every user-visible string goes into both `lib/l10n/app_en.arb` (template, with `@key` descriptions) and `lib/l10n/app_de.arb`. Then run `fvm flutter gen-l10n` and commit the generated files.
+- **Strings:** every user-visible string goes into both `lib/l10n/app_en.arb` (template, with `@key` descriptions) and `lib/l10n/app_de.arb`. Then run `./dev flutter gen-l10n` and commit the generated files.
 - **Input:** trim list names and item texts before storing them, and reject empty ones.
 - **Case-insensitive matching** (unique list names, dictionary entries, duplicate items) uses Dart's `toLowerCase()` via `textKey()`, stored in `*_key` columns. Don't use SQLite `NOCASE`, which only folds ASCII.
 - **Dictionary:** insert-only. Never delete from it.
@@ -59,18 +62,19 @@ test/
 
 ## Verifying on the emulator
 
-Test on the Android 16 emulator (AVD `shopper_api36`, see README), not on a real phone:
+Test on the containerized Android 16 emulator (see README), not on a real phone:
 
-- Install the build with `adb install -r …`.
+- Start it with `./dev emulator start` (waits until booted). The dev container connects adb automatically (`emulator:5555`).
+- Install the build with `./dev adb install -r …`, or use `./dev flutter run`.
 - Drive the app with `adb shell input tap/text/keyevent`, and use `input motionevent DOWN/MOVE/UP` for long-press drags.
 - Inspect the UI with `uiautomator dump` and take screenshots with `adb exec-out screencap -p`.
-- For debug builds, the database is at `/data/data/de.flbraun.shopper/databases/shopper.db` (`adb root`, then `sqlite3`).
+- For debug builds, the database is at `/data/data/de.flbraun.shopper/databases/shopper.db`. `adb root` restarts adbd and drops the connection, so run `adb connect emulator:5555` again afterwards, then `sqlite3`.
 
 ## Release
 
 - Release signing reads `android/key.properties` and `keystore/shopper-release.jks`. **Never commit, print or move these files**, and never regenerate the keystore: updates must be signed with the same key.
 - Without `key.properties`, the release build is unsigned (for F-Droid).
-- Build releases with `fvm flutter build apk --release --split-per-abi`: one APK per architecture, copied to `build/release/shopper-<abi>-<version>.apk` by the `copyReleaseApks` Gradle task. Keep Flutter's original names in `build/app/outputs/flutter-apk/` untouched; the Flutter tool looks them up there. Don't force splits in Gradle; it breaks the Flutter tool and `flutter run`.
+- Build releases with `./dev flutter build apk --release --split-per-abi`: one APK per architecture, copied to `build/release/shopper-<abi>-<version>.apk` by the `copyReleaseApks` Gradle task. Keep Flutter's original names in `build/app/outputs/flutter-apk/` untouched; the Flutter tool looks them up there. Don't force splits in Gradle; it breaks the Flutter tool and `flutter run`.
 - Releases follow README section "Publishing a release": bump the version in `pubspec.yaml` (name and build number) in a PR titled `chore(release): X.Y.Z`; after it is merged, tag the merge result on `master` as `vX.Y.Z`. GitHub Actions builds and publishes the release; the tag must match `pubspec.yaml`. Don't tag or push without the maintainer's go-ahead.
 - CI: `.github/workflows/check.yml` runs on every push/PR, `release.yml` on `v*` tags. Keep them in sync with the local commands above, and lint workflow changes with `actionlint`.
 - Only English and German resources are bundled (`localeFilters`). Adding a language means updating the ARB files, `localeFilters` and `android/app/src/main/res/xml/locales_config.xml`.

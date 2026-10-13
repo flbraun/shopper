@@ -1,0 +1,60 @@
+# Containerized development environment. Use it through ./dev (see README).
+name: shopper
+
+services:
+  # Build, test and release toolchain. The repository is mounted at
+  # /workspace; Gradle and pub caches persist in volumes.
+  dev:
+    build:
+      context: .
+      dockerfile: docker/dev/Dockerfile
+      # Builds use the host network stack (incl. IPv6), see "networks".
+      network: host
+      entitlements: [network.host]
+      args:
+        UID: ${DEV_UID:-1000}
+        GID: ${DEV_GID:-1000}
+    image: shopper-dev
+    volumes:
+      - .:/workspace
+      - gradle-cache:/home/dev/.gradle
+      - pub-cache:/home/dev/.pub-cache
+      - adb-keys:/home/dev/.android
+    stdin_open: true
+    tty: true
+
+  # Android 16 emulator; screen at http://localhost:6080/vnc.html
+  emulator:
+    build:
+      context: .
+      dockerfile: docker/emulator/Dockerfile
+      network: host
+      entitlements: [network.host]
+    image: shopper-emulator
+    devices:
+      - /dev/kvm
+    # Time for Android to power off cleanly on "docker stop".
+    stop_grace_period: 60s
+    environment:
+      ADB_KEY_OWNER: ${DEV_UID:-1000}:${DEV_GID:-1000}
+    ports:
+      - 127.0.0.1:6080:6080
+    volumes:
+      - adb-keys:/adbkeys
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/emulator-healthcheck"]
+      interval: 10s
+      timeout: 10s
+      start_period: 5m
+      retries: 30
+
+networks:
+  # IPv6 lets containers reach dl.google.com (Android SDK, Google Maven)
+  # on networks where its IPv4 path is broken; IPv4 still works as usual.
+  default:
+    enable_ipv6: true
+
+volumes:
+  gradle-cache:
+  pub-cache:
+  adb-keys:

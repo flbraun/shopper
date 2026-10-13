@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Runs commands in the containerized development environment (compose.yaml).
+#
+#   ./dev                            interactive shell in the dev container
+#   ./dev flutter test               any command, e.g. flutter, dart, adb
+#   ./dev build [dev|emulator]       (re)build the images
+#   ./dev emulator start|stop|logs   manage the Android 16 emulator
+set -euo pipefail
+cd "$(dirname "$0")"
+
+# Files written to the mounted repository belong to the calling user.
+export DEV_UID="${DEV_UID:-$(id -u)}" DEV_GID="${DEV_GID:-$(id -g)}"
+
+# Images are built with buildx bake instead of "docker compose build":
+# builds need the host network (IPv6, see compose.yaml), and Compose has no
+# way to grant that permission.
+build() {
+  docker buildx bake -f compose.yaml --allow network.host "${@:-dev}"
+}
+
+ensure_image() {
+  docker image inspect "shopper-$1" >/dev/null 2>&1 || build "$1"
+}
+
+case "${1:-}" in
+  build)
+    shift
+    if [ $# -eq 0 ]; then build dev emulator; else build "$@"; fi
+    ;;
+  emulator)
+    case "${2:-}" in
+      start)
+        ensure_image emulator
+        docker compose up -d --wait emulator
+        echo "Emulator ready. Screen: http://localhost:6080/vnc.html?autoconnect=1&resize=scale"
+        ;;
+      stop) docker compose stop emulator ;;
+      logs) docker compose logs -f emulator ;;
+      *) echo "usage: ./dev emulator start|stop|logs" >&2; exit 1 ;;
+    esac
+    ;;
+  *)
+    ensure_image dev
+    exec docker compose run --rm dev "${@:-bash}"
+    ;;
+esac
