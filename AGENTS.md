@@ -71,7 +71,7 @@ Test on the Android 16 emulator (AVD `shopper_api36`, see README), not on a real
 - Release signing reads `android/key.properties` and `keystore/shopper-release.jks`. **Never commit, print or move these files**, and never regenerate the keystore: updates must be signed with the same key.
 - Without `key.properties`, the release build is unsigned (for F-Droid).
 - Build releases with `fvm flutter build apk --release --split-per-abi`: one APK per architecture, copied to `build/release/shopper-<abi>-<version>.apk` by the `copyReleaseApks` Gradle task. Keep Flutter's original names in `build/app/outputs/flutter-apk/` untouched; the Flutter tool looks them up there. Don't force splits in Gradle; it breaks the Flutter tool and `flutter run`.
-- Releases follow README section "Publishing a release": bump the version in `pubspec.yaml` (name and build number), commit `chore(release): X.Y.Z`, then tag `vX.Y.Z`. GitHub Actions builds and publishes the release; the tag must match `pubspec.yaml`. Don't tag or push without the maintainer's go-ahead.
+- Releases follow README section "Publishing a release": bump the version in `pubspec.yaml` (name and build number) in a PR titled `chore(release): X.Y.Z`; after it is merged, tag the merge result on `master` as `vX.Y.Z`. GitHub Actions builds and publishes the release; the tag must match `pubspec.yaml`. Don't tag or push without the maintainer's go-ahead.
 - CI: `.github/workflows/check.yml` runs on every push/PR, `release.yml` on `v*` tags. Keep them in sync with the local commands above, and lint workflow changes with `actionlint`.
 - Only English and German resources are bundled (`localeFilters`). Adding a language means updating the ARB files, `localeFilters` and `android/app/src/main/res/xml/locales_config.xml`.
 
@@ -103,4 +103,12 @@ Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/):
 - **Description:** imperative mood, lower case, no trailing period, ≤ 72 characters for the whole header.
 - **Body:** use it to explain *why* when that isn't obvious.
 - **Breaking changes:** mark with `!` after the type/scope (`feat(db)!: …`) and a `BREAKING CHANGE:` footer.
-- **One logical change per commit.** Commit only when the maintainer asks, and work on `main` unless told otherwise.
+- **One logical change per commit.** Commit only when the maintainer asks.
+
+## Branches and pull requests
+
+- **Never commit directly to `master`.** Every change goes through a pull request into `master`.
+- **Branch names** use the Conventional Commits type plus a short kebab-case description: `<type>/<description>`, e.g. `feat/item-editing`, `fix/duplicate-dialog-focus`, `docs/pr-workflow`. Branch off an up-to-date `master`.
+- **One topic per branch and PR.** The PR title follows the commit header format (`<type>(<scope>): <description>`).
+- **Before opening a PR,** run the checks from *Tooling* locally. CI (`check.yml`) must pass before merging.
+- **Push branches and open PRs only with the maintainer's go-ahead.** The maintainer reviews and merges.
