@@ -90,12 +90,17 @@ jobs:
 
       - name: Verify signatures
         run: |
+          set -o pipefail
           apksigner="$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -n 1)apksigner"
           for apk in build/release/*.apk; do
-            digest="$("$apksigner" verify --print-certs "$apk" \
-              | sed -n 's/^Signer #1 certificate SHA-256 digest: //p')"
-            if [ "$digest" != "$SIGNING_CERT_SHA256" ]; then
-              echo "::error::$apk is not signed with the release key ($digest)"
+            # The signer label differs between apksigner versions
+            # ("Signer #1 certificate …" vs. "V2 Signer: certificate …"),
+            # so match any certificate digest line. Every signer must use
+            # the release certificate.
+            digests="$("$apksigner" verify --print-certs "$apk" \
+              | sed -n 's/.*certificate SHA-256 digest: //p' | sort -u)"
+            if [ "$digests" != "$SIGNING_CERT_SHA256" ]; then
+              echo "::error::$apk is not signed with the release key (found: ${digests:-none})"
               exit 1
             fi
           done
