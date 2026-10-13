@@ -7,7 +7,7 @@ import 'settings/settings.dart';
 import 'ui/lists_screen.dart';
 
 /// Used when the OS doesn't provide a Material You palette.
-const _fallbackSeedColor = Color(0xFF2E7D32);
+const _fallbackSeedColor = Color(0xFF4A5C92);
 
 class ShopperApp extends StatelessWidget {
   const ShopperApp({super.key, required this.lists, required this.settings});
