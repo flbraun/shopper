@@ -139,9 +139,13 @@ Check the signature with:
 
 Releases are built by GitHub Actions (`.github/workflows/release.yml`) when a version tag is pushed. `pubspec.yaml` is the single source of the version; the tag must match it.
 
-1. In `pubspec.yaml`, raise the version name and add 1 to the build number (the part after `+`, keep it below 1000), e.g. `0.1.0+1` → `0.2.0+2`.
-2. Commit: `git commit -am "chore(release): 0.2.0"`
-3. Tag and push: `git tag v0.2.0 && git push origin main v0.2.0`
+1. On a branch `chore/release-0.2.0`, raise the version name in `pubspec.yaml` and add 1 to the build number (the part after `+`, keep it below 1000), e.g. `0.1.0+1` → `0.2.0+2`.
+2. Commit `chore(release): 0.2.0`, open a pull request and merge it into `master`.
+3. Tag the merged commit and push the tag:
+   ```bash
+   git switch master && git pull
+   git tag v0.2.0 && git push origin v0.2.0
+   ```
 
 The workflow:
 - checks that the tag matches `pubspec.yaml`,
@@ -164,6 +168,10 @@ sed -n 's/^storePassword=//p' android/key.properties | gh secret set SHOPPER_KEY
 ```
 
 Every push and pull request also runs `.github/workflows/check.yml`: generated translations up to date, format check, lint and tests.
+
+## Contributing
+
+`master` only changes through pull requests. Use a branch named `<type>/<description>` (e.g. `feat/item-editing`) and [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages and PR titles; details are in `AGENTS.md`.
 
 ## License
 
